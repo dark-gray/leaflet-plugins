@@ -87,16 +87,33 @@ L.Yandex = L.Layer.extend({
 		map.on(events, this);
 		this.once('remove', function () {
 			map.off(events, this);
-			this._container.remove(); // we do not call this until api is initialized (ymaps API expects DOM element)
+			if (this._container) {
+				this._container.remove(); // we do not call this until api is initialized (ymaps API expects DOM element)
+			}
 		}, this);
 	},
 
 	_update: function () {
+		this._resize();
+
 		var map = this._map;
 		var center = map.getCenter();
 		this._yandex.setCenter([center.lat, center.lng], map.getZoom());
 		var offset = L.point(0,0).subtract(L.DomUtil.getPosition(map.getPane('mapPane')));
 		L.DomUtil.setPosition(this._container, offset); // move to visible part of pane
+	},
+
+	_resize: function (force) {
+		var size = this._map.getSize(), style = this._container.style;
+		if (style.width === size.x + 'px' && style.height === size.y + 'px')
+			if (force !== true) return;
+		this.setElementSize(this._container, size);
+		this._yandex.container.fitToViewport();
+		},
+
+	setElementSize: function (e, size) {
+		e.style.width = size.x + 'px';
+		e.style.height = size.y + 'px';
 	},
 
 	_resyncView: function () { // for use in addons
