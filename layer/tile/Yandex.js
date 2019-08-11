@@ -56,7 +56,7 @@ L.Yandex = L.Layer.extend({
 		mapPane.appendChild(this._container);
 		if (!this._yandex) { return; }
 		this._setEvents(map);
-		this._update();
+		this._update(true);
 	},
 
 	beforeAdd: function (map) {
@@ -93,8 +93,8 @@ L.Yandex = L.Layer.extend({
 		}, this);
 	},
 
-	_update: function () {
-		this._resize();
+	_update: function (force) {
+		this._resize(force);
 
 		var map = this._map;
 		var center = map.getCenter();
